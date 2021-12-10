@@ -14,20 +14,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
     @Autowired
-    private OrderRepository orderRepositorio;
+    private OrderRepository orderRepository;
     
     public List<Order> getAll() {
-        return orderRepositorio.getAll();
+        return orderRepository.getAll();
     }
     
     public Optional<Order> getOrder(int id) {
-        return orderRepositorio.getOrder(id);
+        return orderRepository.getOrder(id);
     }
 
 
     public Order create(Order order){ 
         //obtiene el maximo id existente ne la coleccion
-        Optional<Order> orderIdMaximo = orderRepositorio.lastOrderId();
+        Optional<Order> orderIdMaximo = orderRepository.lastOrderId();
         // Si el id del Usuario que se recibe como parametro es nulo, entonces valida el maximo id
         if (order.getId() == null) {
             //Valida el maximo Id generado, si no hay ninguno aun el primer Id sera 1
@@ -37,9 +37,9 @@ public class OrderService {
                 order.setId(orderIdMaximo.get().getId()+ 1);
             }
         }
-        Optional<Order> e = orderRepositorio.getOrder(order.getId());
+        Optional<Order> e = orderRepository.getOrder(order.getId());
         if (e.isEmpty()) {
-            return orderRepositorio.create(order);
+            return orderRepository.create(order);
         } else {
             return order;
         }
@@ -48,12 +48,12 @@ public class OrderService {
     public Order update(Order order) {
 
         if (order.getId() != null) {
-            Optional<Order> orderDb = orderRepositorio.getOrder(order.getId());
+            Optional<Order> orderDb = orderRepository.getOrder(order.getId());
             if (!orderDb.isEmpty()) {
                 if (order.getStatus()!= null) {
                     orderDb.get().setStatus(order.getStatus());
                 }
-                orderRepositorio.update(orderDb.get());
+                orderRepository.update(orderDb.get());
                 return orderDb.get();
             } else {
                 return order;
@@ -74,9 +74,13 @@ public class OrderService {
         }
         */
         Boolean aBoolean = getOrder(orderId).map(order -> {
-            orderRepositorio.delete(order);
+            orderRepository.delete(order);
             return true;
         }).orElse(false);
         return aBoolean;
+    }
+    
+    public List<Order> finByZone(String zona) {
+        return orderRepository.finByZone(zona);
     }
 }
